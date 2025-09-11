@@ -7,9 +7,25 @@
 <script>
 
 const logout = async (e) => {
-//Include the code for logout here.
-};
+  let logout_url = window.location.origin + "/djangoapp/logout";
+  const res = await fetch(logout_url, {
+    method: "GET",
+  });
 
+  const json = await res.json();
+  if (json) {
+    let username = sessionStorage.getItem("username");
+    sessionStorage.removeItem("username");
+
+    // Show alert first
+    alert("Logging out " + username + "...");
+
+    // Then redirect (no need to reload after setting href)
+    window.location.href = window.location.origin;
+  } else {
+    alert("The user could not be logged out.");
+  }
+};
 let checkSession = ()=>{
   let curr_user = sessionStorage.getItem("username");
 
@@ -23,6 +39,18 @@ let checkSession = ()=>{
     '<a class="homepage_links"  href="/register">Register</a>'
   }
  }
+ // Before reload
+sessionStorage.setItem("logoutAlert", username);
+window.location.reload();
+
+// Then in your root component (e.g., App.js or index.js)
+useEffect(() => {
+  const username = sessionStorage.getItem("logoutAlert");
+  if (username) {
+    alert("Logging out " + username + "...");
+    sessionStorage.removeItem("logoutAlert");
+  }
+}, []);
 </script>
 </head>
 <body onload="checkSession()">
